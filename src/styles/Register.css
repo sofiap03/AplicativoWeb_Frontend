@@ -1,0 +1,16 @@
+.register-card {
+  max-width: 400px;
+  width: 100%;
+  border-radius: 15px;
+  background: #ffffff;
+}
+
+h2 {
+  color: #007bff;
+  font-weight: bold;
+}
+
+button {
+  border-radius: 10px;
+  font-weight: bold;
+}
