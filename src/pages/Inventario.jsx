@@ -38,7 +38,11 @@ const Inventario = () => {
   const handleShow = (equipo = null) => {
     if (equipo) {
       setEquipoActual(equipo);
-      setFormData(equipo);
+      setFormData({
+        ...equipo,
+        fechaAdquisicion: equipo.fechaAdquisicion ? equipo.fechaAdquisicion.split("T")[0] : "",
+        ultimaMantenimiento: equipo.ultimaMantenimiento ? equipo.ultimaMantenimiento.split("T")[0] : ""
+      });
     } else {
       setEquipoActual(null);
       setFormData({
@@ -65,33 +69,50 @@ const Inventario = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Datos enviados:", formData); // <-- Verifica qué datos se están enviando
     try {
-      if (equipoActual) {
-        await axios.put(`http://localhost:5000/api/equipos/${equipoActual._id}`, formData, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
-      } else {
-        await axios.post("http://localhost:5000/api/equipos", formData, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
-      }
-      handleClose();
-      cargarEquipos();
+        if (equipoActual) {
+            await axios.put(`http://localhost:5000/api/equipos/${equipoActual._id}`, formData, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
+        } else {
+            await axios.post("http://localhost:5000/api/equipos", formData, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
+        }
+        handleClose();
+        cargarEquipos();
     } catch (error) {
-      console.error("Error al guardar equipo", error);
+        console.error("Error al guardar equipo:", error);
+        if (error.response) {
+            console.error("Detalles del error:", error.response.data);
+        }
     }
-  };
+};
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/equipos/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+const handleDelete = async (id) => {
+  if (!window.confirm("¿Estás seguro de que deseas eliminar este equipo?")) {
+      return;
+  }
+
+  try {
+      const token = localStorage.getItem("token"); // Asegurar el token de autenticación
+      const response = await axios.delete(`http://localhost:5000/api/equipos/${id}`, {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
       });
-      cargarEquipos();
-    } catch (error) {
-      console.error("Error al eliminar equipo", error);
-    }
-  };
+
+      alert(response.data.message); // Mostrar mensaje de éxito
+      cargarEquipos(); // Recargar la lista de equipos después de eliminar
+  } catch (error) {
+      console.error("Error al eliminar equipo:", error);
+      if (error.response) {
+          console.error("Detalles del error:", error.response.data);
+          alert(error.response.data.message || "Error al eliminar el equipo.");
+      }
+  }
+};
 
   return (
     <Container className="inventario-container">
@@ -101,10 +122,12 @@ const Inventario = () => {
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Código UDI</th>
+            <th>Número de Serie</th>
             <th>Modelo</th>
             <th>Marca</th>
-            <th>Estado</th>
             <th>Ubicación</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -112,10 +135,12 @@ const Inventario = () => {
           {equipos.map((equipo) => (
             <tr key={equipo._id}>
               <td>{equipo.nombre}</td>
+              <td>{equipo.codigoUDI}</td>
+              <td>{equipo.numeroSerie}</td>
               <td>{equipo.modelo}</td>
               <td>{equipo.marca}</td>
-              <td>{equipo.estado}</td>
               <td>{equipo.ubicacion}</td>
+              <td>{equipo.estado}</td>
               <td>
                 <Button variant="warning" onClick={() => handleShow(equipo)} className="me-2">Editar</Button>
                 <Button variant="danger" onClick={() => handleDelete(equipo._id)}>Eliminar</Button>
@@ -124,33 +149,24 @@ const Inventario = () => {
           ))}
         </tbody>
       </Table>
-      {/* Modal para agregar/editar equipo */}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{equipoActual ? "Editar Equipo" : "Agregar Equipo"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group>
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Modelo</Form.Label>
-              <Form.Control type="text" name="modelo" value={formData.modelo} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Marca</Form.Label>
-              <Form.Control type="text" name="marca" value={formData.marca} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Estado</Form.Label>
-              <Form.Select name="estado" value={formData.estado} onChange={handleChange}>
-                <option>Operativo</option>
-                <option>En mantenimiento</option>
-                <option>Fuera de servicio</option>
-              </Form.Select>
-            </Form.Group>
+            {Object.keys(formData).map((key) => (
+              <Form.Group key={key}>
+                <Form.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</Form.Label>
+                <Form.Control
+                  type={key.includes("fecha") ? "date" : "text"}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  required={!key.includes("ultimaMantenimiento")}
+                />
+              </Form.Group>
+            ))}
             <Button variant="success" type="submit" className="mt-3 w-100">Guardar</Button>
           </Form>
         </Modal.Body>
