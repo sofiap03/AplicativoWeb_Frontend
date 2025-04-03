@@ -32,9 +32,10 @@ const Login = () => {
 
       if (!response.ok) throw new Error(data.message || "Credenciales incorrectas");
 
-      // Guardar el token en localStorage (si el backend lo devuelve)
-      if (data.token) {
+      // Guardar el token y el usuario en localStorage
+      if (data.token && data.usuario) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", JSON.stringify(data.usuario)); // ✅ Guardamos el usuario completo
       }
 
       alert("Inicio de sesión exitoso");
