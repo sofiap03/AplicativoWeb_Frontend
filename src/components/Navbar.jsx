@@ -1,14 +1,21 @@
 import { Navbar, Nav, Container, Button, Offcanvas } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/Navbar.css";
 import Logo from "../assets/logo.png";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const [usuario, setUsuario] = useState(null);
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("usuario");
+    if (storedUser) {
+      setUsuario(JSON.parse(storedUser));
+    }
+  }, []);
 
   if (location.pathname === "/login" || location.pathname === "/registro") return null;
 
@@ -38,7 +45,9 @@ const NavBar = () => {
           <div className="ms-auto d-flex align-items-center">
             {usuario ? (
               <>
-                <Navbar.Text className="text-white me-3">Bienvenido, {usuario.nombre}</Navbar.Text>
+                <Navbar.Text className="text-white me-3">
+                  Bienvenido, {usuario.nombre || "Usuario"}
+                </Navbar.Text>
                 <Button variant="danger" onClick={cerrarSesion}>Cerrar Sesión</Button>
               </>
             ) : (
