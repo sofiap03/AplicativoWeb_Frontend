@@ -1,0 +1,116 @@
+.mantenimiento-container {
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.formulario-mantenimiento {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.formulario-mantenimiento input,
+.formulario-mantenimiento select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 200px;
+}
+
+.formulario-mantenimiento button {
+  padding: 0.5rem 1rem;
+  background-color: #0a7cff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formulario-mantenimiento button:hover {
+  background-color: #045bb8;
+}
+
+.tabla-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+table th {
+  background-color: #f3f3f3;
+}
+
+.btn-edit,
+.btn-delete {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin: 0 5px;
+}
+
+.btn-edit:hover {
+  color: #ffb700;
+}
+
+.btn-delete:hover {
+  color: red;
+}
+
+.titulo-principal {
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin-top: 20px;
+}
+
+.titulo-secundario {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin-top: 20px;
+
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-gris {
+  background-color: #d3d3d3;
+  color: #333;
+}
+
+.btn-gris:hover {
+  background-color: #bfbfbf;
+}
+
+.btn-gris-sm {
+  background-color: #d3d3d3;
+  color: #333;
+  font-size: 12px;
+  padding: 6px 10px;
+  margin: 0 2px;
+  border-radius: 6px;
+}
+
+.btn-gris-sm:hover {
+  background-color: #bfbfbf;
+}
