@@ -5,6 +5,8 @@ import PlanSuscripcion from "./pages/PlanSuscripcion";
 import Dashboard from "./pages/Dashboard";
 import NavBar from "./components/Navbar";
 import Inventario from "./pages/Inventario";
+import Mantenimiento from "./pages/Mantenimiento";
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path="/planSuscripcion" element={<PlanSuscripcion />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/inventario" element={<Inventario />} />
+        <Route path="/mantenimiento" element={<Mantenimiento />} />
       </Routes>
     </>
   );
