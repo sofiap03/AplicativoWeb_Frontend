@@ -142,7 +142,7 @@ const handleDelete = async (id) => {
               <td>{equipo.ubicacion}</td>
               <td>{equipo.estado}</td>
               <td>
-                <Button variant="warning" onClick={() => handleShow(equipo)} className="me-2">Editar</Button>
+                <Button variant="secondary" onClick={() => handleShow(equipo)} className="me-2">Editar</Button>
                 <Button variant="danger" onClick={() => handleDelete(equipo._id)}>Eliminar</Button>
               </td>
             </tr>

@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { Card, Container, Row, Col } from "react-bootstrap";
+import axios from "axios";
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
   const usuario = JSON.parse(localStorage.getItem("usuario")) || { nombre: "Usuario" };
-  
-  // Datos simulados hasta conectar con las páginas futuras
+  const token = localStorage.getItem("token");
+
   const [equiposRegistrados, setEquiposRegistrados] = useState(0);
   const [mantenimientosAgendados, setMantenimientosAgendados] = useState(0);
 
   useEffect(() => {
-    // Aquí irán las peticiones a la API cuando las páginas estén listas
-    // Simulamos datos con valores de prueba
-    setEquiposRegistrados(5); 
-    setMantenimientosAgendados(2); 
-  }, []);
+    const fetchData = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const [resEquipos, resMantenimientos] = await Promise.all([
+          axios.get("http://localhost:5000/api/equipos", config),
+          axios.get("http://localhost:5000/api/mantenimientos", config),
+        ]);
+
+        setEquiposRegistrados(resEquipos.data.length);
+        setMantenimientosAgendados(resMantenimientos.data.length);
+      } catch (error) {
+        console.error("Error al obtener datos del dashboard:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
 
   return (
     <Container className="dashboard-container">
