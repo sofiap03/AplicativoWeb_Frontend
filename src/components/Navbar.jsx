@@ -13,9 +13,15 @@ const NavBar = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem("usuario");
     if (storedUser) {
-      setUsuario(JSON.parse(storedUser));
+      try {
+        const usuarioParseado = JSON.parse(storedUser);
+        setUsuario(usuarioParseado);
+      } catch (error) {
+        console.error("Error al parsear usuario desde localStorage:", error);
+        setUsuario(null);
+      }
     }
-  }, []);
+  }, [location]);;
 
   if (location.pathname === "/login" || location.pathname === "/registro") return null;
 
@@ -33,7 +39,7 @@ const NavBar = () => {
           {/* Sección izquierda: Botón de menú + Logo + Nombre */}
           <div className="d-flex align-items-center">
             <Button className="custom-hamburger" onClick={() => setShow(true)}>
-             ☰
+              ☰
             </Button>
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
               <img src={Logo} alt="Logo" className="navbar-logo me-2" />
@@ -46,9 +52,9 @@ const NavBar = () => {
             {usuario ? (
               <>
                 <Navbar.Text className="text-white me-3">
-                  Bienvenido, {usuario.nombre || "Usuario"}
+                  <strong>{usuario.nombre}</strong>
                 </Navbar.Text>
-                <Button variant="danger" onClick={cerrarSesion}>Cerrar Sesión</Button>
+                <Button onClick={cerrarSesion}>Cerrar Sesión</Button>
               </>
             ) : (
               <>
@@ -67,10 +73,10 @@ const NavBar = () => {
         </Offcanvas.Header>
         <Offcanvas.Body>
           <Nav className="flex-column">
-            <Nav.Link as={Link} to="/inventario" onClick={() => setShow(false)}>Inventario</Nav.Link>
-            <Nav.Link as={Link} to="/mantenimientos" onClick={() => setShow(false)}>Mantenimientos</Nav.Link>
-            <Nav.Link as={Link} to="/reportes" onClick={() => setShow(false)}>Reportes</Nav.Link>
             <Nav.Link as={Link} to="/dashboard" onClick={() => setShow(false)}>Inicio</Nav.Link>
+            <Nav.Link as={Link} to="/inventario" onClick={() => setShow(false)}>Inventario</Nav.Link>
+            <Nav.Link as={Link} to="/mantenimiento" onClick={() => setShow(false)}>Mantenimientos</Nav.Link>
+            <Nav.Link as={Link} to="/reportes" onClick={() => setShow(false)}>Reportes</Nav.Link>
           </Nav>
         </Offcanvas.Body>
       </Offcanvas>
