@@ -20,6 +20,14 @@ const Inventario = () => {
     responsable: ""
   });
 
+  const [archivos, setArchivos] = useState({
+    manualUsuario: null,
+    fichaTecnica: null,
+    registroSanitario: null,
+    factura: null
+
+  });
+
   useEffect(() => {
     cargarEquipos();
   }, []);
@@ -40,8 +48,13 @@ const Inventario = () => {
       setEquipoActual(equipo);
       setFormData({
         ...equipo,
-        fechaAdquisicion: equipo.fechaAdquisicion ? equipo.fechaAdquisicion.split("T")[0] : "",
-        ultimaMantenimiento: equipo.ultimaMantenimiento ? equipo.ultimaMantenimiento.split("T")[0] : ""
+        fechaAdquisicion: equipo.fechaAdquisicion?.split("T")[0] || "",
+        ultimaMantenimiento: equipo.ultimaMantenimiento?.split("T")[0] || ""
+      });
+      setArchivos({
+        manualUsuario: null,
+        fichaTecnica: null,
+        registroSanitario: null
       });
     } else {
       setEquipoActual(null);
@@ -57,6 +70,11 @@ const Inventario = () => {
         ultimaMantenimiento: "",
         responsable: ""
       });
+      setArchivos({
+        manualUsuario: null,
+        fichaTecnica: null,
+        registroSanitario: null
+      });
     }
     setShow(true);
   };
@@ -67,52 +85,65 @@ const Inventario = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleArchivoChange = (e) => {
+    setArchivos({ ...archivos, [e.target.name]: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos enviados:", formData); // <-- Verifica qué datos se están enviando
-    try {
-        if (equipoActual) {
-            await axios.put(`http://localhost:5000/api/equipos/${equipoActual._id}`, formData, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            });
-        } else {
-            await axios.post("http://localhost:5000/api/equipos", formData, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            });
-        }
-        handleClose();
-        cargarEquipos();
-    } catch (error) {
-        console.error("Error al guardar equipo:", error);
-        if (error.response) {
-            console.error("Detalles del error:", error.response.data);
-        }
+
+    const data = new FormData();
+
+    for (const key in formData) {
+      data.append(key, formData[key]);
     }
-};
 
-const handleDelete = async (id) => {
-  if (!window.confirm("¿Estás seguro de que deseas eliminar este equipo?")) {
-      return;
-  }
+    for (const key in archivos) {
+      if (archivos[key]) {
+        data.append(key, archivos[key]);
+      }
+    }
 
-  try {
-      const token = localStorage.getItem("token"); // Asegurar el token de autenticación
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+
+      if (equipoActual) {
+        await axios.put(`http://localhost:5000/api/equipos/${equipoActual._id}`, data, config);
+      } else {
+        await axios.post("http://localhost:5000/api/equipos", data, config);
+      }
+
+      handleClose();
+      cargarEquipos();
+    } catch (error) {
+      console.error("Error al guardar equipo:", error);
+      if (error.response) {
+        console.error("Detalles del error:", error.response.data);
+      }
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este equipo?")) return;
+
+    try {
       const response = await axios.delete(`http://localhost:5000/api/equipos/${id}`, {
-          headers: {
-              Authorization: `Bearer ${token}`
-          }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
-
-      alert(response.data.message); // Mostrar mensaje de éxito
-      cargarEquipos(); // Recargar la lista de equipos después de eliminar
-  } catch (error) {
+      alert(response.data.message);
+      cargarEquipos();
+    } catch (error) {
       console.error("Error al eliminar equipo:", error);
       if (error.response) {
-          console.error("Detalles del error:", error.response.data);
-          alert(error.response.data.message || "Error al eliminar el equipo.");
+        alert(error.response.data.message || "Error al eliminar el equipo.");
       }
-  }
-};
+    }
+  };
 
   return (
     <Container className="inventario-container">
@@ -127,6 +158,7 @@ const handleDelete = async (id) => {
             <th>Modelo</th>
             <th>Marca</th>
             <th>Ubicación</th>
+            <th>Documentos</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -140,7 +172,51 @@ const handleDelete = async (id) => {
               <td>{equipo.modelo}</td>
               <td>{equipo.marca}</td>
               <td>{equipo.ubicacion}</td>
-              <td>{equipo.estado}</td>
+
+              <td>
+                {equipo.manualUsuario && (
+                <a
+                  href={`http://localhost:5000/${equipo.manualUsuario}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                📄 Manual
+                </a>
+                )}
+                <br />
+                {equipo.fichaTecnica && (
+                <a
+                  href={`http://localhost:5000/${equipo.fichaTecnica}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                📄 Ficha
+                </a>
+                )}
+              <br />
+              {equipo.registroSanitario && (
+                <a
+                 href={`http://localhost:5000/${equipo.registroSanitario}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                📄 Registro
+                </a>
+            )}
+            {equipo.factura && (
+            <>
+            <br />
+              <a
+                href={`http://localhost:5000/${equipo.factura}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              > 
+              📄 Factura
+              </a>
+             </>
+            )}
+            </td>
+            <td>{equipo.estado}</td>
               <td>
                 <Button variant="secondary" onClick={() => handleShow(equipo)} className="me-2">Editar</Button>
                 <Button variant="danger" onClick={() => handleDelete(equipo._id)}>Eliminar</Button>
@@ -149,6 +225,7 @@ const handleDelete = async (id) => {
           ))}
         </tbody>
       </Table>
+
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{equipoActual ? "Editar Equipo" : "Agregar Equipo"}</Modal.Title>
@@ -156,7 +233,7 @@ const handleDelete = async (id) => {
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             {Object.keys(formData).map((key) => (
-              <Form.Group key={key}>
+              <Form.Group key={key} className="mb-2">
                 <Form.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</Form.Label>
                 <Form.Control
                   type={key.includes("fecha") ? "date" : "text"}
@@ -167,6 +244,27 @@ const handleDelete = async (id) => {
                 />
               </Form.Group>
             ))}
+
+            <Form.Group className="mb-2">
+              <Form.Label>Manual de Usuario</Form.Label>
+              <Form.Control type="file" name="manualUsuario" onChange={handleArchivoChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-2">
+              <Form.Label>Ficha Técnica</Form.Label>
+              <Form.Control type="file" name="fichaTecnica" onChange={handleArchivoChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-2">
+              <Form.Label>Registro Sanitario</Form.Label>
+              <Form.Control type="file" name="registroSanitario" onChange={handleArchivoChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-2">
+              <Form.Label>Factura</Form.Label>
+              <Form.Control type="file" name="factura" onChange={handleArchivoChange} />
+            </Form.Group>
+
             <Button variant="success" type="submit" className="mt-3 w-100">Guardar</Button>
           </Form>
         </Modal.Body>

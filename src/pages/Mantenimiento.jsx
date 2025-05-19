@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import FormularioMantenimiento from "../components/FormularioMantenimiento";
+import CalendarioMantenimientos from "../components/CalendarioMantenimientos"; 
 import "../styles/mantenimiento.css";
 
 function Mantenimiento() {
@@ -62,6 +63,19 @@ function Mantenimiento() {
     }
   };
 
+  const marcarComoCompletado = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/api/mantenimientos/${id}`, {
+        estado: "completado"
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchMantenimientos();
+    } catch (error) {
+      console.error("Error al marcar como completado:", error);
+    }
+  };
+
   const handleAgregar = () => {
     setDatosEdicion(null);
     setModoEdicion(false);
@@ -74,11 +88,19 @@ function Mantenimiento() {
     setDatosEdicion(null);
   };
 
+  const mantenimientosOrdenados = [...mantenimientos].sort(
+    (a, b) => new Date(a.fecha) - new Date(b.fecha)
+  );
+
   return (
     <div className="mantenimiento-container">
       <h2 className="titulo-principal">Gestión de Mantenimientos</h2>
+
+      {/* Calendario de mantenimientos */}
+      <CalendarioMantenimientos />
+
       <button onClick={handleAgregar} className="btn btn-gris">➕ Agregar Mantenimiento</button>
-  
+
       {formVisible && (
         <FormularioMantenimiento
           onSubmit={handleGuardar}
@@ -87,7 +109,7 @@ function Mantenimiento() {
           onCancel={handleCancelar}
         />
       )}
-  
+
       <h4 className="titulo-secundario">Mantenimientos Programados</h4>
       <div className="tabla-container">
         <table>
@@ -102,8 +124,11 @@ function Mantenimiento() {
             </tr>
           </thead>
           <tbody>
-            {mantenimientos.map((m) => (
-              <tr key={m._id}>
+            {mantenimientosOrdenados.map((m) => (
+              <tr
+                key={m._id}
+                className={m.estado === "programado" ? "fila-programado" : ""}
+              >
                 <td>{m.equipoId?.nombre} ({m.equipoId?.modelo})</td>
                 <td>{m.descripcion}</td>
                 <td>{m.fecha?.substring(0, 10)}</td>
@@ -112,6 +137,9 @@ function Mantenimiento() {
                 <td>
                   <button onClick={() => handleEditar(m)} className="btn btn-gris-sm" title="Editar">✏️</button>
                   <button onClick={() => handleEliminar(m._id)} className="btn btn-gris-sm" title="Eliminar">🗑️</button>
+                  {m.estado === "programado" && (
+                    <button onClick={() => marcarComoCompletado(m._id)} className="btn btn-gris-sm" title="Completar">✅</button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -119,8 +147,7 @@ function Mantenimiento() {
         </table>
       </div>
     </div>
-  );  
-  
+  );
 }
 
 export default Mantenimiento;
