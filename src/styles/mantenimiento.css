@@ -114,3 +114,7 @@ table th {
 .btn-gris-sm:hover {
   background-color: #bfbfbf;
 }
+
+.fila-programado {
+  background-color: #fff7cc; 
+}

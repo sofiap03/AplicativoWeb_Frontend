@@ -1,0 +1,15 @@
+.calendario-container {
+    max-width: 1000px;
+    margin: auto;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  
+  .fc .fc-event {
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+  
