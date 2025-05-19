@@ -10,7 +10,7 @@ function FormularioMantenimiento({ onSubmit, valores, modoEdicion, onCancel }) {
     tipo: "preventivo",
     descripcion: "",
     tecnico: "",
-    estado: "pendiente"
+    estado: "programado" 
   });
 
   useEffect(() => {
@@ -98,12 +98,15 @@ function FormularioMantenimiento({ onSubmit, valores, modoEdicion, onCancel }) {
         required
       />
 
-      <label>Estado:</label>
-      <select name="estado" value={mantenimiento.estado} onChange={handleChange}>
-        <option value="pendiente">Pendiente</option>
-        <option value="en proceso">En Proceso</option>
-        <option value="completado">Completado</option>
-      </select>
+      {modoEdicion && (
+        <>
+          <label>Estado:</label>
+          <select name="estado" value={mantenimiento.estado} onChange={handleChange}>
+            <option value="programado">Programado</option>
+            <option value="completado">Completado</option>
+          </select>
+        </>
+      )}
 
       <div className="form-buttons">
         <button type="submit">{modoEdicion ? "Actualizar" : "Guardar"}</button>

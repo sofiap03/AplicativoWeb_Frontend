@@ -1,4 +1,4 @@
-import { Navbar, Nav, Container, Button, Offcanvas } from "react-bootstrap";
+import { Navbar, Nav, Container, Button, Offcanvas, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../styles/Navbar.css";
@@ -21,9 +21,10 @@ const NavBar = () => {
         setUsuario(null);
       }
     }
-  }, [location]);;
+  }, [location]);
 
-  if (location.pathname === "/login" || location.pathname === "/registro") return null;
+  if (location.pathname === "/login" || location.pathname === "/registro")
+    return null;
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
@@ -36,9 +37,9 @@ const NavBar = () => {
       {/* Navbar superior */}
       <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
         <Container fluid>
-          {/* Sección izquierda: Botón de menú + Logo + Nombre */}
+          {/* Sección izquierda: Menú + Logo */}
           <div className="d-flex align-items-center">
-            <Button className="custom-hamburger" onClick={() => setShow(true)}>
+            <Button className="custom-hamburger me-2" onClick={() => setShow(true)}>
               ☰
             </Button>
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
@@ -47,19 +48,28 @@ const NavBar = () => {
             </Navbar.Brand>
           </div>
 
-          {/* Sección derecha: Usuario y Cerrar Sesión */}
+          {/* Sección derecha: Usuario / Sesión */}
           <div className="ms-auto d-flex align-items-center">
             {usuario ? (
-              <>
-                <Navbar.Text className="text-white me-3">
-                  <strong>{usuario.nombre}</strong>
-                </Navbar.Text>
-                <Button onClick={cerrarSesion}>Cerrar Sesión</Button>
-              </>
+              <Dropdown align="end">
+                <Dropdown.Toggle variant="primary" id="dropdown-user" className="me-3">
+                  {usuario.nombre}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item as={Link} to="/perfil">Mi Perfil</Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item onClick={cerrarSesion}>Cerrar Sesión</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login" className="text-white me-3">Iniciar Sesión</Nav.Link>
-                <Nav.Link as={Link} to="/registro" className="text-white">Registrarse</Nav.Link>
+                <Nav.Link as={Link} to="/login" className="text-white me-3">
+                  Iniciar Sesión
+                </Nav.Link>
+                <Nav.Link as={Link} to="/registro" className="text-white">
+                  Registrarse
+                </Nav.Link>
               </>
             )}
           </div>
@@ -76,7 +86,7 @@ const NavBar = () => {
             <Nav.Link as={Link} to="/dashboard" onClick={() => setShow(false)}>Inicio</Nav.Link>
             <Nav.Link as={Link} to="/inventario" onClick={() => setShow(false)}>Inventario</Nav.Link>
             <Nav.Link as={Link} to="/mantenimiento" onClick={() => setShow(false)}>Mantenimientos</Nav.Link>
-            <Nav.Link as={Link} to="/reportes" onClick={() => setShow(false)}>Reportes</Nav.Link>
+            <Nav.Link as={Link} to="/hojadevida" onClick={() => setShow(false)}>Hoja de vida Equipos</Nav.Link>
           </Nav>
         </Offcanvas.Body>
       </Offcanvas>
