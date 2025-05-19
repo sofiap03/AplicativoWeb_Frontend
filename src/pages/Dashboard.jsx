@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import logo2 from "../assets/logo2.jpg"; // Imagen local
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
@@ -35,30 +36,49 @@ const Dashboard = () => {
   }, [token]);
 
   return (
-    <Container className="dashboard-container">
-      <h1 className="text-center">¡Bienvenido, {usuario.nombre}!</h1>
-      <p className="text-center">Estado Actual</p>
+    <>
+      <Container className="dashboard-container">
+        <h1 className="text-center">¡Bienvenido, {usuario.nombre}!</h1>
+        <p className="text-center">Estado Actual</p>
 
-      <Row className="justify-content-center">
-        <Col md={4}>
-          <Card className="dashboard-card">
-            <Card.Body>
-              <Card.Title className="text-center">Equipos Registrados</Card.Title>
-              <Card.Text className="text-center">{equiposRegistrados}</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
+        <Row className="justify-content-center">
+          <Col md={4}>
+            <Card className="dashboard-card">
+              <Card.Body>
+                <Card.Title className="text-center">Equipos Registrados</Card.Title>
+                <Card.Text className="text-center">{equiposRegistrados}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
 
-        <Col md={4}>
-          <Card className="dashboard-card">
-            <Card.Body>
-              <Card.Title className="text-center">Mantenimientos Agendados</Card.Title>
-              <Card.Text className="text-center">{mantenimientosAgendados}</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+          <Col md={4}>
+            <Card className="dashboard-card">
+              <Card.Body>
+                <Card.Title className="text-center">Mantenimientos Agendados</Card.Title>
+                <Card.Text className="text-center">{mantenimientosAgendados}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+
+      {/* Footer con imagen pequeña */}
+      <footer style={{
+        marginTop: "60px",
+        padding: "20px 0",
+        backgroundColor: "#f8f9fa",
+        textAlign: "center"
+      }}>
+        <img
+          src={logo2}
+          alt="Logo Endocol"
+          style={{ width: "180px", height: "auto", opacity: 0.85 }}
+        />
+        <p style={{ fontSize: "0.9rem", color: "#666", marginTop: "10px" }}>
+          © 2025 EndoCol - Todos los derechos reservados
+        </p>
+      </footer>
+    </>
   );
 };
 
